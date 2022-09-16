@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="osmap" method="upgrade">
+    <name>PLG_OSMAP_KUNENA</name>
+    <author>Joomlashack</author>
+    <authorEmail>help@joomlashack.com</authorEmail>
+    <authorUrl>https://www.joomlashack.com/</authorUrl>
+    <copyright>Copyright 2016-2021 Joomlashack.com. All rights reserved</copyright>
+    <license>GNU GPL; see LICENSE file</license>
+    <description>PLG_OSMAP_KUNENA_DESC</description>
+    <version>5.0.2</version>
+    <creationDate>November 09 2021</creationDate>
+
+    <files>
+        <folder>language</folder>
+
+        <filename plugin="com_kunena">com_kunena.php</filename>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="include_topics"
+                       type="list"
+                       default="1"
+                       label="PLG_OSMAP_KUNENA_SHOW_TOPICS_LABEL"
+                       description="PLG_OSMAP_KUNENA_SHOW_TOPICS_DESC">
+                    <option value="0">PLG_OSMAP_KUNENA_OPTION_NEVER</option>
+                    <option value="1">PLG_OSMAP_KUNENA_OPTION_ALWAYS</option>
+                    <option value="2">PLG_OSMAP_KUNENA_OPTION_XML_ONLY</option>
+                    <option value="3">PLG_OSMAP_KUNENA_OPTION_HTML_ONLY</option>
+                </field>
+
+                <field name="max_topics"
+                       type="text"
+                       label="PLG_OSMAP_KUNENA_MAX_TOPICS_LABEL"
+                       description="PLG_OSMAP_KUNENA_MAX_TOPICS_DESC"/>
+
+                <field name="max_age"
+                       type="text"
+                       label="PLG_OSMAP_KUNENA_NEWEST_THAN_LABEL"
+                       description="PLG_OSMAP_KUNENA_NEWEST_THAN_DESC"/>
+            </fieldset>
+
+            <fieldset name="xml">
+                <field name="cat_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_KUNENA_CATEGORY_PRIORITY_LABEL"
+                       description="PLG_OSMAP_KUNENA_CATEGORY_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_KUNENA_OPTION_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="cat_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_KUNENA_CATEGORY_CHANGEFREQ_LABEL"
+                       description="PLG_OSMAP_KUNENA_CATEGORY_CHANGEFREQ_DESC">
+                    <option value="-1">PLG_OSMAP_KUNENA_OPTION_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_KUNENA_OPTION_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_KUNENA_OPTION_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_KUNENA_OPTION_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_KUNENA_OPTION_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_KUNENA_OPTION_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_KUNENA_OPTION_YEARLY</option>
+                    <option value="never">PLG_OSMAP_KUNENA_OPTION_NEVER</option>
+                </field>
+
+                <field name="topic_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_KUNENA_TOPIC_PRIORITY_LABEL"
+                       description="PLG_OSMAP_KUNENA_TOPIC_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_KUNENA_OPTION_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="topic_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_KUNENA_TOPIC_CHANGEFREQ_LABEL"
+                       description="PLG_OSMAP_KUNENA_TOPIC_CHANGEFREQ_DESC">
+                    <option value="-1">PLG_OSMAP_KUNENA_OPTION_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_KUNENA_OPTION_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_KUNENA_OPTION_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_KUNENA_OPTION_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_KUNENA_OPTION_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_KUNENA_OPTION_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_KUNENA_OPTION_YEARLY</option>
+                    <option value="never">PLG_OSMAP_KUNENA_OPTION_NEVER</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

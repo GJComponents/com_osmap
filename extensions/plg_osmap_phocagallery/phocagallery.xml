@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<extension type="plugin" group="osmap" method="upgrade">
+    <name>PLG_OSMAP_PHOCAGALLERY</name>
+    <author>Joomlashack</author>
+    <authorEmail>help@joomlashack.com</authorEmail>
+    <authorUrl>https://www.joomlashack.com/</authorUrl>
+    <copyright>Copyright 2016-2021 Joomlashack.com. All rights reserved.</copyright>
+    <license>GNU GPL; see LICENSE file</license>
+    <description>PLG_OSMAP_PHOCAGALLERY_DESC</description>
+    <version>5.0.2</version>
+    <creationDate>November 09 2021</creationDate>
+
+    <files>
+        <folder>language</folder>
+        <filename plugin="phocagallery">phocagallery.php</filename>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic"
+                      label="PLG_OSMAP_PHOCAGALLERY_BASIC_FIELDSET_LABEL">
+                <field name="include_images"
+                       type="list"
+                       default="1"
+                       label="PLG_OSMAP_PHOCAGALLERY_INCLUDE_IMAGES_LABEL"
+                       description="PLG_OSMAP_PHOCAGALLERY_INCLUDE_IMAGES_DESC">
+                    <option value="0">PLG_OSMAP_PHOCAGALLERY_OPTION_NEVER</option>
+                    <option value="1">PLG_OSMAP_PHOCAGALLERY_OPTION_ALWAYS</option>
+                    <option value="2">PLG_OSMAP_PHOCAGALLERY_OPTION_XML_ONLY</option>
+                    <option value="3">PLG_OSMAP_PHOCAGALLERY_OPTION_HTML_ONLY</option>
+                </field>
+                <field name="show_unauth" type="list" default="0" label="PLG_OSMAP_PHOCAGALLERY_SHOW_UNAUTH_LINKS_LABEL" description="PLG_OSMAP_PHOCAGALLERY_SHOW_UNAUTH_LINKS_DESC">
+                    <option value="0">PLG_OSMAP_PHOCAGALLERY_OPTION_NEVER</option>
+                    <option value="1">PLG_OSMAP_PHOCAGALLERY_OPTION_ALWAYS</option>
+                    <option value="2">PLG_OSMAP_PHOCAGALLERY_OPTION_XML_ONLY</option>
+                    <option value="3">PLG_OSMAP_PHOCAGALLERY_OPTION_HTML_ONLY</option>
+                </field>
+
+            </fieldset>
+
+            <fieldset name="xml"
+                      label="PLG_OSMAP_PHOCAGALLERY_XML_FIELDSET_LABEL">
+                <field name="category_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_PHOCAGALLERY_CATEGORY_PRIORITY_LABEL"
+                       description="PLG_OSMAP_PHOCAGALLERY_CATEGORY_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_PHOCAGALLERY_OPTION_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="category_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_PHOCAGALLERY_CATEGORY_CHANGEFREQ_LABEL"
+                       description="PLG_OSMAP_PHOCAGALLERY_CATEGORY_CHANGEFREQ_DESC">
+                    <option value="-1">PLG_OSMAP_PHOCAGALLERY_OPTION_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_PHOCAGALLERY_OPTION_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_PHOCAGALLERY_OPTION_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_PHOCAGALLERY_OPTION_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_PHOCAGALLERY_OPTION_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_PHOCAGALLERY_OPTION_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_PHOCAGALLERY_OPTION_YEARLY</option>
+                    <option value="never">PLG_OSMAP_PHOCAGALLERY_OPTION_NEVER</option>
+                </field>
+
+                <field name="image_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_PHOCAGALLERY_IMAGES_PRIORITY_LABEL"
+                       description="PLG_OSMAP_PHOCAGALLERY_IMAGES_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_PHOCAGALLERY_OPTION_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="image_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_PHOCAGALLERY_IMAGES_CHANGE_FREQ_LABEL"
+                       description="PLG_OSMAP_PHOCAGALLERY_IMAGES_CHANGE_FREQ_DESC">
+                    <option value="-1">PLG_OSMAP_PHOCAGALLERY_OPTION_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_PHOCAGALLERY_OPTION_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_PHOCAGALLERY_OPTION_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_PHOCAGALLERY_OPTION_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_PHOCAGALLERY_OPTION_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_PHOCAGALLERY_OPTION_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_PHOCAGALLERY_OPTION_YEARLY</option>
+                    <option value="never">PLG_OSMAP_PHOCAGALLERY_OPTION_NEVER</option>
+                </field>
+
+                <field name="enable_imagemap" type="radio" class="btn-group" default="0" label="PLG_OSMAP_PHOCAGALLERY_ENABLE_IMAGEMAP_LABEL" description="PLG_OSMAP_PHOCAGALLERY_ENABLE_IMAGEMAP_DESC">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="image_type" type="list" default="original" label="PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_LABEL" description="PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_DESC">
+                    <option value="thumb_s">PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_OPTION_THUMB_S</option>
+                    <option value="thumb_m">PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_OPTION_THUMB_M</option>
+                    <option value="thumb_l">PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_OPTION_THUMB_L</option>
+                    <option value="original">PLG_OSMAP_PHOCAGALLERY_IMAGE_TYPE_OPTION_ORIGINAL</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

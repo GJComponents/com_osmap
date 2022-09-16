@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="osmap" method="upgrade">
+    <name>PLG_OSMAP_JDOWNLOADS</name>
+    <author>Joomlashack</author>
+    <authorEmail>help@joomlashack.com</authorEmail>
+    <authorUrl>https://www.joomlashack.com/</authorUrl>
+    <copyright>Copyright 2015-2021 Joomlashack.com. All rights reserved.</copyright>
+    <license>GNU GPL; see LICENSE file</license>
+    <description>PLG_OSMAP_JDOWNLOADS_DESCRIPTION</description>
+    <version>5.0.2</version>
+    <creationDate>November 09 2021</creationDate>
+
+    <files>
+        <folder>language</folder>
+        <filename plugin="jdownloads">jdownloads.php</filename>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic"
+                      label="PLG_OSMAP_JDOWNLOADS_BASIC_FIELDSET_LABEL">
+                <field name="include_downloads"
+                       type="list"
+                       default="1"
+                       label="PLG_OSMAP_JDOWNLOADS_SETTING_INCLUDE_DOWNLOADS_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_SETTING_INCLUDE_DOWNLOADS_DESC">
+                    <option value="0">PLG_OSMAP_JDOWNLOADS_NEVER</option>
+                    <option value="1">PLG_OSMAP_JDOWNLOADS_ALWAYS</option>
+                    <option value="2">PLG_OSMAP_JDOWNLOADS_XML_ONLY</option>
+                    <option value="3">PLG_OSMAP_JDOWNLOADS_HTML_ONLY</option>
+                </field>
+
+                <field name="show_unauth"
+                       type="list"
+                       default="1"
+                       label="PLG_OSMAP_JDOWNLOADS_SETTING_SHOW_UNAUTH_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_SETTING_SHOW_UNAUTH_DESC">
+                    <option value="0">PLG_OSMAP_JDOWNLOADS_NEVER</option>
+                    <option value="1">PLG_OSMAP_JDOWNLOADS_ALWAYS</option>
+                    <option value="2">PLG_OSMAP_JDOWNLOADS_XML_ONLY</option>
+                    <option value="3">PLG_OSMAP_JDOWNLOADS_HTML_ONLY</option>
+                </field>
+            </fieldset>
+
+            <fieldset name="xml"
+                      label="PLG_OSMAP_JDOWNLOADS_XML_FIELDSET_LABEL">
+                <field name="category_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_JDOWNLOADS_CATEGORY_PRIORITY_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_CATEGORY_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_JDOWNLOADS_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="category_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_JDOWNLOADS_CATEGORY_CHANGEFREQ_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_CATEGORY_CHANGEFREQ_DESC">
+                    <option value="-1">PLG_OSMAP_JDOWNLOADS_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_JDOWNLOADS_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_JDOWNLOADS_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_JDOWNLOADS_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_JDOWNLOADS_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_JDOWNLOADS_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_JDOWNLOADS_YEARLY</option>
+                    <option value="never">PLG_OSMAP_JDOWNLOADS_NEVER</option>
+                </field>
+
+                <field name="download_priority"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_JDOWNLOADS_DOWNLOADS_PRIORITY_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_DOWNLOADS_PRIORITY_DESC">
+                    <option value="-1">PLG_OSMAP_JDOWNLOADS_USE_PARENT_MENU</option>
+                    <option value="0.0">0.0</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                    <option value="1">1</option>
+                </field>
+
+                <field name="download_changefreq"
+                       type="list"
+                       default="-1"
+                       label="PLG_OSMAP_JDOWNLOADS_DOWNLOADS_CHANGEFREQ_LABEL"
+                       description="PLG_OSMAP_JDOWNLOADS_DOWNLOADS_CHANGEFREQ_DESC">
+                    <option value="-1">PLG_OSMAP_JDOWNLOADS_USE_PARENT_MENU</option>
+                    <option value="always">PLG_OSMAP_JDOWNLOADS_ALWAYS</option>
+                    <option value="hourly">PLG_OSMAP_JDOWNLOADS_HOURLY</option>
+                    <option value="daily">PLG_OSMAP_JDOWNLOADS_DAILY</option>
+                    <option value="weekly">PLG_OSMAP_JDOWNLOADS_WEEKLY</option>
+                    <option value="monthly">PLG_OSMAP_JDOWNLOADS_MONTHLY</option>
+                    <option value="yearly">PLG_OSMAP_JDOWNLOADS_YEARLY</option>
+                    <option value="never">PLG_OSMAP_JDOWNLOADS_NEVER</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

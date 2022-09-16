@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+    <name>COM_OSMAP</name>
+    <author>Joomlashack</author>
+    <authorEmail>help@joomlashack.com</authorEmail>
+    <authorUrl>https://www.joomlashack.com/</authorUrl>
+    <copyright>Copyright 2016-2021 Joomlashack.com. All rights reserved</copyright>
+    <license>GNU GPL; see LICENSE file</license>
+    <description>COM_OSMAP_DESCRIPTION</description>
+    <version>5.0.3</version>
+    <creationDate>November 09 2021</creationDate>
+    <variant>PRO</variant>
+
+    <scriptfile>script.installer.php</scriptfile>
+
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
+        </sql>
+    </install>
+
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall/mysql/uninstall.sql</file>
+        </sql>
+    </uninstall>
+
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+
+    <files folder="site">
+        <folder>helpers</folder>
+        <folder>language</folder>
+        <folder>views</folder>
+
+        <filename>controller.php</filename>
+        <filename>osmap.php</filename>
+    </files>
+
+    <media destination="com_osmap" folder="media">
+        <folder>css</folder>
+        <folder>images</folder>
+        <folder>js</folder>
+    </media>
+
+    <administration>
+        <menu>COM_OSMAP_TITLE</menu>
+        <submenu>
+            <menu view="sitemaps">COM_OSMAP_SUBMENU_SITEMAPS</menu>
+            <menu link="option=com_plugins&amp;filter[folder]=osmap">COM_OSMAP_SUBMENU_EXTENSIONS</menu>
+        </submenu>
+        <files folder="admin">
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>include.php</filename>
+            <filename>osmap.php</filename>
+
+            <folder>controllers</folder>
+            <folder>form</folder>
+            <folder>helpers</folder>
+            <folder>language</folder>
+            <folder>library</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+        </files>
+    </administration>
+
+    <updateservers>
+        <server type="extension" priority="1" name="OSMap Pro"><![CDATA[https://deploy.ostraining.com/client/update/pro/stable/com_osmap]]></server>
+    </updateservers>
+
+    <alledia>
+        <element>osmap</element>
+        <namespace>OSMap</namespace>
+        <license>pro</license>
+        <targetplatform>3.9</targetplatform>
+        <phpminimum>7.2</phpminimum>
+        <previousminimum>4.2.1</previousminimum>
+
+        <relatedExtensions>
+            <extension type="library"
+                       element="allediaframework">ShackFramework</extension>
+
+            <extension type="plugin"
+                       group="system"
+                       element="osmylicensesmanager"
+                       publish="true"
+                       ordering="last">ShackExtensionSupport</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="true"
+                       element="joomla"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_joomla</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_jdownloads:*"
+                       element="jdownloads"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_jdownloads</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_k2:*"
+                       element="com_k2"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_com_k2</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_kunena:*"
+                       element="com_kunena"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_com_kunena</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_phocagallery:*"
+                       element="phocagallery"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_phocagallery</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_sobipro:*"
+                       element="com_sobipro"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_com_sobipro</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_virtuemart:*"
+                       element="com_virtuemart"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_com_virtuemart</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_oscampus:*"
+                       element="oscampus"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_oscampus</extension>
+
+            <extension type="plugin"
+                       group="osmap"
+                       publish="com_focalpoint:*"
+                       element="shacklocations"
+                       downgrade="true"
+                       uninstall="true">plg_osmap_shacklocations</extension>
+        </relatedExtensions>
+
+        <include>ShackDefaultFiles</include>
+
+        <obsolete>
+            <preflight>
+                <folder>administrator/components/com_osmap/library/alledia</folder>
+                <folder>administrator/components/com_osmap/library/pimple</folder>
+            </preflight>
+
+            <extension type="plugin"
+                       group="osmap"
+                       element="com_content"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_content"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_k2"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_kunena"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_mtree"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_sobipro"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_virtuemart"/>
+
+            <extension type="plugin"
+                       group="xmap"
+                       element="com_weblinks"/>
+
+            <extension type="plugin"
+                       group="osmap"
+                       element="cache"/>
+
+            <folder>administrator/components/com_osmap/library/Free</folder>
+            <folder>administrator/components/com_osmap/library/osmap</folder>
+            <folder>administrator/components/com_osmap/library/Osmap</folder>
+            <folder>administrator/components/com_osmap/models/fields</folder>
+            <folder>administrator/components/com_osmap/models/forms</folder>
+            <folder>administrator/components/com_osmap/sql/updates/mysql/utf8</folder>
+
+            <file>administrator/components/com_osmap/form/fields/osmapmenus.php</file>
+            <file>administrator/components/com_osmap/helpers/html/grid.php</file>
+            <file>administrator/components/com_osmap/helpers/osmap.php</file>
+            <file>administrator/components/com_osmap/sql/install/mysql/utf8.sql</file>
+            <file>administrator/components/com_osmap/sql/uninstall/mysql/utf8.sql</file>
+            <file>administrator/components/com_osmap/views/sitemap/tmpl/default.php</file>
+            <file>administrator/components/com_osmap/views/sitemap/tmpl/edit_legacy.php</file>
+            <file>administrator/components/com_osmap/views/sitemap/tmpl/navigator.php</file>
+            <file>administrator/components/com_osmap/views/sitemap/tmpl/navigator_class.php</file>
+            <file>administrator/components/com_osmap/views/sitemap/tmpl/navigator_links.php</file>
+            <file>administrator/components/com_osmap/views/sitemaps/tmpl/default_legacy.php</file>
+            <file>administrator/components/com_osmap/views/sitemaps/tmpl/form.php</file>
+            <file>components/com_osmap/views/html/metadata.xml</file>
+            <file>components/com_osmap/views/html/tmpl/default_class.php</file>
+            <file>components/com_osmap/views/xml/metadata.xml</file>
+            <file>components/com_osmap/views/xml/tmpl/default_class.php</file>
+            <file>components/com_osmap/views/xml/tmpl/default_message.php</file>
+            <file>components/com_osmap/views/xml/tmpl/default_xsl.php</file>
+            <file>media/com_osmap/js/jquery.js</file>
+            <file>media/com_osmap/js/ractive.min.js</file>
+        </obsolete>
+    </alledia>
+</extension>
