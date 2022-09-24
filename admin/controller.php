@@ -35,4 +35,35 @@ defined('_JEXEC') or die();
 class OSMapController extends OSMap\Controller\Base
 {
     protected $default_view = 'sitemaps';
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

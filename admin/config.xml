@@ -43,7 +43,7 @@
             <option value="0">JNO</option>
         </field>
     </fieldset>
-    <fieldset name="basic"
+    <fieldset name="background_creation"
               label="COM_OSMAP_FIELDSET_LOGIC_SETTINGS_LABEL">
 
         <field name="background_creation"
@@ -58,7 +58,37 @@
         	<option value="1">JYES</option>
         	<option value="0">JNO</option>
         </field>
-        
+
+        <!-- Максимаьное количество ошибок для Ajax запроса -->
+        <field name="max_ajax_err"
+        	type="text"
+        	default="5"
+        	class="max_ajax_err "
+        	size="20"
+        	readonly=""
+        	required=""
+        	label="CONFIG_MAX_AJAX_ERR"
+        	description="CONFIG_MAX_AJAX_ERR_DESC"
+        	showon="background_creation:1"
+        	hint=""
+        	filter="raw" />
+        	
+        	
+        <field name="gzip_on"
+        	type="radio"
+        	default="0"
+        	readonly="0"
+        	label="COM_OSMAP_CONFIG_GZIP_ON"
+        	description="COM_OSMAP_CONFIG_GZIP_ON_DESC"
+        	class="btn-group btn-group-yesno"
+        	showon="background_creation:1"
+
+        	>
+        	<option value="1">JYES</option>
+        	<option value="0">JNO</option>
+        </field>
+
+
          
     </fieldset>
 

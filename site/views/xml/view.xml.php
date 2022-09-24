@@ -86,8 +86,8 @@ class OSMapViewXml extends HtmlView
      */
     public function display($tpl = null)
     {
-        $document = Factory::getDocument();
 
+        $document = Factory::getDocument();
 
 
 
@@ -109,6 +109,8 @@ class OSMapViewXml extends HtmlView
 
         /** @var Alledia\OSMap\Sitemap\Standard $this->sitemap  */
         $this->sitemap = Factory::getSitemap($app->input->getInt('id'), $this->type);
+
+
 
 
 

@@ -34,24 +34,21 @@ class OSMapController extends BaseController
     {
 
         // TODO : Отключение Кеша - Временно для разработки
-         $cachable = false ;
-
-
-
-
+        $cachable = false;
 
         $urlparams = array_merge(
             $urlparams,
             array(
-                'news'   => 'INT',
+                'news' => 'INT',
                 'images' => 'INT',
-                'lang'   => 'CMD'
+                'lang' => 'CMD'
             )
         );
-
-
-
-
         return parent::display($cachable, $urlparams);
+    }
+    public function background_map ( ){
+
+        $this->display();
+
     }
 }

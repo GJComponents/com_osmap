@@ -210,7 +210,7 @@ class Collector
 
 
 
-                    if ($this->itemIsBlackListed( $item )) {
+                    if ( $this->itemIsBlackListed( $item ) ) {
                         $item = null;
                         continue;
                     }
@@ -228,12 +228,16 @@ class Collector
 
                     // Check the level of menu
                     $level = (int)$item['level'] - 1;
-                    if ($level !== $this->currentLevel) {
+                    if ( $level !== $this->currentLevel ) {
                         $this->changeLevel($level - $this->currentLevel);
                     }
 
 
 //                    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
+
+//                    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
+//                    die(__FILE__ .' '. __LINE__ );
+
 
                     /**
                      * Перебор плагинов - и добавление в $item
@@ -585,6 +589,9 @@ class Collector
     }
 
     /**
+     * Вызывает соответствующий плагин OSMap и XMap в соответствии с
+     * компонент/опция. Получите дополнительные элементы и отправьте на callable method.
+     *
      * Calls the respective OSMap and XMap plugin, according to the item's
      * component/option. Get additional items and send to the callback.
      *
@@ -592,13 +599,42 @@ class Collector
      * @param callable $callback
      *
      * @return void
+     * @since 3.9
      */
     protected function callPluginsGetItemTree(Item $item, callable $callback)
     {
+
+        $osmapParams = ComponentHelper::getParams('com_osmap');
+        $appInput = \JFactory::getApplication()->input ;
+        $task = $appInput->get('task' , false );
+        $urlComponent = $appInput->get('component' , false );
+        if ( $osmapParams->get('background_creation' , 0 )
+            && $task == 'background_map'
+            && $urlComponent != $item->component  )
+        {
+            return;
+        }#END IF
+
+
+
+
+
+
+
+
+
+
         $this->printNodeCallback = $callback;
 
         // Call the OSMap and XMap legacy plugins
         $plugins = General::getPluginsForComponent($item->component);
+
+//        echo'<pre>';print_r( $item->component );echo'</pre>'.__FILE__.' '.__LINE__;
+//        echo'<pre>';print_r( $plugins );echo'</pre>'.__FILE__.' '.__LINE__;
+//        die(__FILE__ .' '. __LINE__ );
+
+//        return;
+
 
         foreach ($plugins as $plugin) {
             $className = '\\' . $plugin->className;

@@ -23,13 +23,18 @@
  */
 
 use Alledia\OSMap\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
 defined('_JEXEC') or die();
 
+$app = \Joomla\CMS\Factory::getApplication();
+
+$this->countLines = 0 ;
+
+ob_start();
+
+
 echo sprintf('<?xml version="1.0" encoding="%s"?>' . "\n", $this->_charset);
-
-
-
 
 if (empty($this->message)) {
     echo $this->loadTemplate( $this->type );
@@ -37,3 +42,37 @@ if (empty($this->message)) {
 } else {
     echo '<message>' . $this->message . '</message>';
 }
+$mapData = ob_get_contents();
+ob_end_clean();
+
+/**
+ * Если работает фоновое создание карты
+ */
+if ($app->input->get('task', false, 'RAW') == 'background_map' )
+{
+    $paramsComponent = ComponentHelper::getComponent('com_osmap', $strict = false);
+    $component = $app->input->get('component', 'com_menu', 'RAW') ;
+
+    $mapFileResult = \Alledia\OSMap\Helper\General::createFileMapComponent( $mapData , $component  ) ;
+
+
+
+
+    if ( $paramsComponent->params->get('gzip_on') )
+    {
+
+    }#END IF
+    $returnData = [
+        'countLines' => $this->countLines ,
+        'component' => $component ,
+        'textNote'  => 'Для компонента '. $component . ' создано ' . $this->countLines .' ссылок' ,
+        'mapFileResult' => $mapFileResult ,
+    ];
+
+    echo new JResponseJson( $returnData , \Joomla\CMS\Language\Text::_('Завершено') , false );
+    die();
+
+
+}#END IF
+
+echo $mapData ;

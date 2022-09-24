@@ -27,6 +27,7 @@ namespace Alledia\OSMap\Helper;
 use Alledia\OSMap\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\File as JFile;
 use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
@@ -34,6 +35,7 @@ use Joomla\CMS\Version;
 use Joomla\Registry\Registry;
 use osmap_com_virtuemart;
 use PlgOSMapJoomla;
+
 
 defined('_JEXEC') or die();
 
@@ -128,11 +130,17 @@ abstract class General
      *
      * @return array Массив обектов плагинов из таблицы #__extensions
      * @since 3.9
+     * @throws \Exception
+     * TODO - Выбираем плагины из ДБ
      */
     public static function getPluginsFromDatabase(): array
     {
+        $app = \Joomla\CMS\Factory::getApplication();
         $db = Factory::getPimpleContainer()->db;
-
+        $params   = ComponentHelper::getParams('com_osmap');
+        $backgroundCreation = $params->get('background_creation' , 0 );
+        
+        
         // Получить все подключаемые модули OSMap и XMap. Сначала получите плагины XMap затем OSMap. Всегда соблюдая порядок.
         // Get all the OSMap and XMap plugins. Get XMap plugins first then OSMap. Always respecting the ordering.
         $query = $db->getQuery(true)
@@ -151,11 +159,28 @@ abstract class General
             )
             ->where('enabled = 1')
             ->order('folder DESC, ordering');
+        // Если включено фоновое создание
+        if ( $backgroundCreation && $app->input->get('task' , false ) == 'background_map'  )
+        {
+            $componentName = $app->input->get('component' , false , 'RAW' ) ;
+            if ( !$componentName )
+            {
+                return [];
+            }#END IF
+            if ($componentName == 'com_content' )
+            {
+                $componentName = 'joomla' ;
+            }#END IF
+
+
+            $query->where('element = ' . $db->quote( $componentName ) );
+        }#END IF
+//        echo $query->dump();
+//        die(__FILE__ .' '. __LINE__ );
+
 
         return $db->setQuery($query)->loadObjectList();
     }
-
-
 
     /**
      * Возвращает true, если плагин совместим с данной опцией.
@@ -172,24 +197,16 @@ abstract class General
      */
     protected static function checkPluginCompatibilityWithOption(object $plugin, ?string $option  , $params  , $queryArr =  [] ): bool
     {
-
-
-
         /**
          * START - Проверяем - нужно ли обрабатывать этот плагин если включено фоновое создание карты
          *
          */
         $backgroundCreation = $params->get('background_creation' , 0 );
-        if ( $backgroundCreation && array_key_exists(   'component' , $queryArr) && $queryArr['component'] != $option )
+        if ( $backgroundCreation && array_key_exists(   'component' , $queryArr ) && $queryArr['component'] != $option )
         {
             return false;
         }#END IF
 
-
-
-
-
-        
         if (empty($option)) {
             return false;
         }
@@ -262,18 +279,9 @@ abstract class General
      */
     public static function getPluginsForComponent(?string $option): array
     {
-
-
-
-
-
         // Проверьте, есть ли кешированный список плагинов для этой опции.
         // Check if there is a cached list of plugins for this option
         if ($option && empty(static::$plugins[$option])) {
-
-
-
-
 
             $queryArr = [] ;
             $params   = ComponentHelper::getParams('com_osmap');
@@ -287,11 +295,11 @@ abstract class General
             }#END IF
 
 
-
-
             $compatiblePlugins = [];
 
             $plugins = static::getPluginsFromDatabase();
+
+
 
 
 
@@ -456,6 +464,10 @@ abstract class General
     }
 
     /**
+     * Проверьте, является ли нужный метод статическим или нет, и вызовите его в правильном
+     * способ, позволяющий избежать строгих предупреждений в сторонних плагинах. Он возвращает
+     * результат вызванного метода.
+     *
      * Check if the needed method is static or not and call it in the proper
      * way, avoiding Strict warnings in 3rd party plugins. It returns the
      * result of the called method.
@@ -466,6 +478,7 @@ abstract class General
      * @param array  $params
      *
      * @return mixed
+     * @since 3.9
      */
     public static function callUserFunc(string $class, object $instance, string $method, array $params = [])
     {
@@ -481,5 +494,38 @@ abstract class General
         }
 
         return null;
+    }
+
+    /**
+     * Создать файл map.xml для выбранного компанента
+     * @param string $mapData
+     * @param string $component - название компанента com_menu | com_content
+     * @return string[]|void
+     * @since 3.9
+     */
+    public static function createFileMapComponent( string $mapData , string $component = 'com_menu' ){
+        $paramsComponent = ComponentHelper::getComponent('com_osmap', $strict = false);
+        $fileName = 'sitemap-'.$component.'-1.xml';
+        $pathFile = JPATH_SITE .'/'. $fileName ;
+        try
+        {
+            // Code that may throw an Exception or Error.
+            JFile::write( $pathFile , $mapData);
+            // throw new \Exception('Code Exception '.__FILE__.':'.__LINE__) ;
+        }
+        catch (\Exception $e)
+        {
+            // Executed only in PHP 5, will not be reached in PHP 7
+            echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
+            echo'<pre>';print_r( $e );echo'</pre>'.__FILE__.' '.__LINE__;
+            die(__FILE__ .' '. __LINE__ );
+        }
+
+        $returnData = [
+            'fileName' => $fileName,
+            'pathFile' => $pathFile,
+        ];
+        return $returnData;
+
     }
 }

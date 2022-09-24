@@ -68,7 +68,20 @@
                     description="PLG_OSMAP_VM_SETTING_INCLUDE_PRODUCT_IMAGES_LIMIT_DESC"/>
 
             </fieldset>
-
+            <fieldset name="background">
+                <field name="limit_category_in_files"
+                	type="text"
+                	default="100"
+                	class="limit_category_in_files "
+                	size="20"
+                	readonly=""
+                	required=""
+                	label="COM_VIRTUEMART_LIMIT_CATEGORY_IN_FILES"
+                	description="COM_VIRTUEMART_LIMIT_CATEGORY_IN_FILES_DESC"
+                	showon=""
+                	hint=""
+                	filter="raw" />
+            </fieldset>
             <fieldset name="xml">
                 <field
                     name="cat_priority"
@@ -146,6 +159,7 @@
                     <option value="never">PLG_OSMAP_VM_OPTION_NEVER</option>
                 </field>
             </fieldset>
+
         </fields>
     </config>
 </extension>

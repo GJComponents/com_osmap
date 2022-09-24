@@ -131,11 +131,15 @@ class Standard implements SitemapInterface
     }
 
     /**
+     *
+     * Запускается из файла /components/com_osmap/views/xml/tmpl/default_standard.php
      * @inheritDoc
      * @since 3.9
+     *
      */
     public function traverse( callable $callback, $triggerEvents = true, $updateCount = false)
     {
+
 
         // Запускаем плагины
         if ($triggerEvents) {
@@ -144,7 +148,10 @@ class Standard implements SitemapInterface
 
             $eventParams = [$this, $callback];
             $results     = Factory::getApplication()->triggerEvent('osmapOnBeforeCollectItems', $eventParams);
+            
 
+
+            
             // Если Плагин попросил остановить траверс
             // A plugin asked to stop the traverse
             if (in_array(true, $results)) {

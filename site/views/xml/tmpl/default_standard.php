@@ -41,10 +41,6 @@ $debug                = $this->params->get('debug', 0) ? "\n" : '';
  */
 $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDuplicatedUIDs, $debug) {
 
-
-
-
-
     $display = !$node->ignore
         && $node->published
         && (!$node->duplicate || !$ignoreDuplicatedUIDs)
@@ -76,9 +72,6 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
      */
 
 
-
-
-
     /**
      * START - Background Creation For Menu
      * - Только для пунктов меню. Что бы они не падали в map.xml - созданные плагинами
@@ -92,21 +85,28 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
         $uriLink = $uri::getInstance();
         $queryArr = $uriLink->getQuery(true);
 
+
+
         // Если в URL -> ?component=com_content и это пункт меню  - пропускаем
         if ( array_key_exists(   'component' , $queryArr) && $node->isMenuItem == 1 )
         {
             return false;
         }#END IF
-        echo'<pre>';print_r( $node->isMenuItem );echo'</pre>'.__FILE__.' '.__LINE__;
+
+        if ( !array_key_exists(   'component' , $queryArr) && $node->isMenuItem !=  1  )
+        {
+            return false;
+        }#END IF
+
+
+
+
     }#END IF
 
 
     /**
      * END - Background Creation For Menu
      */
-
-
-
 
     if (!$display) {
         return false;
@@ -117,22 +117,29 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
     echo '<url>';
     echo '<loc>' . $node->fullLink . '</loc>';
 
-//    if (!General::isEmptyDate($node->modified)) {
-//        echo '<lastmod>' . $node->modified . '</lastmod>';
-//    }
-//    echo '<changefreq>' . $node->changefreq . '</changefreq>';
-//    echo '<priority>' . $node->priority . '</priority>';
+    //    if (!General::isEmptyDate($node->modified)) {
+    //        echo '<lastmod>' . $node->modified . '</lastmod>';
+    //    }
+    //    echo '<changefreq>' . $node->changefreq . '</changefreq>';
+    //    echo '<priority>' . $node->priority . '</priority>';
     echo '</url>';
 
     echo $debug;
-
+    $this->countLines ++ ;
     return true;
 };
 
-echo $this->addStylesheet();
+$app = \Joomla\CMS\Factory::getApplication();
+if ($app->input->get('task', false, 'RAW') !== 'background_map'  )
+{
+    echo $this->addStylesheet();
+}#END IF
+
 
 echo $debug . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . $debug;
 
-$this->sitemap->traverse($printNodeCallback);
+$this->sitemap->traverse( $printNodeCallback );
 
 echo '</urlset>';
+
+

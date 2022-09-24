@@ -24,6 +24,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+
+
 use Alledia\OSMap\Plugin\Base;
 use Alledia\OSMap\Plugin\ContentInterface;
 use Alledia\OSMap\Sitemap\Collector;
@@ -32,6 +34,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+
+
+
+
+
 
 if (!class_exists('VmConfig')) {
     $vmPath = JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/config.php';
@@ -145,6 +152,7 @@ class osmap_com_virtuemart extends Base implements ContentInterface
     }
 
     /**
+     * Раскрывает пункт меню com_virtuemart
      * Expand a com_virtuemart menu item
      *
      * @param Collector $collector
@@ -153,15 +161,15 @@ class osmap_com_virtuemart extends Base implements ContentInterface
      *
      * @return void
      * @throws Exception
+     * @since 3.9
      */
     public static function getTree($collector, $parent, $params)
     {
-        if (!class_exists('VmConfig')) {
-            return;
-        }
 
+        if (!class_exists('VmConfig')) {  return;  }
+        // Парсим ссылку на категорию
         $linkQuery = parse_url($parent->link);
-
+        // Парсим параметры в массив
         parse_str(html_entity_decode($linkQuery['query']), $linkVars);
 
         if ($parent->type == 'alias') {
@@ -169,12 +177,16 @@ class osmap_com_virtuemart extends Base implements ContentInterface
         } else {
             $parentId = $parent->id;
         }
-        $params['Itemid'] = intval(ArrayHelper::getValue($linkVars, 'Itemid', $parentId));
+        $params['Itemid'] = intval( ArrayHelper::getValue($linkVars, 'Itemid', $parentId ));
+
+
+
 
         $categories = [];
         if (isset($linkVars['virtuemart_category_id'])) {
             $categories[] = intval(ArrayHelper::getValue($linkVars, 'virtuemart_category_id'));
         } else {
+            // У нас нет категории, установленной для текущего меню/представления. Давайте использовать глобальную настройку
             // We don't have a category set for the current menu/view. Let's use the global setting
             $categories = ArrayHelper::getValue($params, 'global_categories', []);
         }
@@ -216,24 +228,45 @@ class osmap_com_virtuemart extends Base implements ContentInterface
         $params['prod_priority']   = $priority;
         $params['prod_changefreq'] = $changefreq;
 
+        echo'<pre>';print_r( $categories );echo'</pre>'.__FILE__.' '.__LINE__;
+
+
+
+
         foreach ($categories as $catId) {
-            self::getCategoryTree($collector, $parent, $params, $catId);
+            self::getCategoryTree($collector, $parent, (array)$params, $catId);
         }
 
         self::$categoriesCache = [];
     }
 
     /**
-     * @param Collector $collector
-     * @param Item      $parent
-     * @param Registry  $params
-     * @param int       $catId
+     * @var int счет категорий
+     * @since 3.9
+     */
+    public static $counterCategory = 0;
+    /**
+     * @var int счет продуктов
+     * @since 3.9
+     */
+    public static $counterProducts = 0;
+
+
+    public static $backgraundCategoryArr = [] ;
+    /**
+     * Получить вложенные категории
+     * @param Alledia\OSMap\Sitemap\Collector $collector
+     * @param Item $parent
+     * @param Array $params
+     * @param int|null $catId
      *
      * @return void
      * @throws Exception
+     * @since 3.9
      */
-    public static function getCategoryTree($collector, $parent, $params, $catId = null)
+    public static function getCategoryTree(Collector $collector, Item $parent,   Array $params, int $catId = null)
     {
+        
         $children = self::getChildCategories($catId);
 
         if (!empty($children)) {
@@ -258,11 +291,19 @@ class osmap_com_virtuemart extends Base implements ContentInterface
                     'link'       => 'index.php?' . http_build_query($linkQuery, null, '&amp;')
                 ];
 
+
+
+                self::$backgraundCategoryArr[] = $node ;
+
+//                echo'<pre>';print_r( $params );echo'</pre>'.__FILE__.' '.__LINE__;
+
+
+
                 if ($params['include_product_images']) {
                     $node->images = [];
                 }
 
-                if ($collector->printNode($node) !== false) {
+                if ( $collector->printNode($node) !== false) {
                     self::getCategoryTree($collector, $parent, $params, $row->virtuemart_category_id);
                 }
 
@@ -274,12 +315,30 @@ class osmap_com_virtuemart extends Base implements ContentInterface
             $collector->changeLevel(-1);
         }
 
-        if ($params['include_products'] > 0 && !is_null($catId)) {
+//        echo'<pre>';print_r( self::$backgraundCategoryArr );echo'</pre>'.__FILE__.' '.__LINE__;
+
+        // TODO - Отключить выборку товаров из категорий для тестов
+        $params['include_products'] = 0 ;
+
+        if ( $params['include_products'] > 0 && !is_null($catId)) {
             $collector->changeLevel(1);
 
             $products = self::getProducts($catId);
+            
+//            echo'<pre>';print_r( count( $products ) );echo'</pre>'.__FILE__.' '.__LINE__;
+
+
+
 
             foreach ($products as $row) {
+                self::$counterProducts ++ ;
+
+                if ( self::$counterProducts > 100 )
+                {
+                    continue ;
+                }#END IF
+
+
                 $linkQuery = [
                     'option'                 => 'com_virtuemart',
                     'view'                   => 'productdetails',
@@ -303,6 +362,9 @@ class osmap_com_virtuemart extends Base implements ContentInterface
                     'images'         => []
                 ];
 
+
+
+                // Если использовать изображения
                 if ($params['include_product_images']) {
                     $images = self::getProductImages($row->virtuemart_product_id, $params['product_image_limit']);
 
@@ -322,6 +384,9 @@ class osmap_com_virtuemart extends Base implements ContentInterface
 
             $collector->changeLevel(-1);
         }
+
+
+
     }
 
     /**
@@ -386,14 +451,10 @@ class osmap_com_virtuemart extends Base implements ContentInterface
         try {
             $productModel = static::getProductModel();
             $ids          = $productModel->sortSearchListQuery(true, $catId);
-
             return $productModel->getProducts($ids);
-
         } catch (Exception $e) {
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-
         }
-
         return [];
     }
 
@@ -407,7 +468,6 @@ class osmap_com_virtuemart extends Base implements ContentInterface
                 static::$productModel->set('_noLimit', true);
             }
         }
-
         return static::$productModel;
     }
 
