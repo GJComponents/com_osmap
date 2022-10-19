@@ -1,8 +1,4 @@
 <updates>
-    <!-- 
-    ВНИМАНИЕ : Удалить все комментарии из этого файла
-    Docs https://docs.joomla.org/Deploying_an_Update_Server 
-    -->
     <update>
         <name>COM_OSMAP</name>
         <description><![CDATA[Компонент создания карты сайта ]]></description>

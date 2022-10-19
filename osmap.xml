@@ -73,7 +73,7 @@
     </administration>
 
     <updateservers>
-        <server type="extension" priority="1" name="OSMap Pro"><![CDATA[https://deploy.ostraining.com/client/update/pro/stable/com_osmap]]></server>
+        <server type="extension" priority="1" name="OSMap Pro">https://raw.githubusercontent.com/GJComponents/com_osmap/main/update.xml</server>
     </updateservers>
 
     <alledia>
