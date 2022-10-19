@@ -11,7 +11,7 @@
         </infourl>
         <downloads>
             <downloadurl type="full" format="zip">
-                https://github.com/GJPlugins/plg_system_osmap_background/archive/refs/heads/main.zip
+                https://github.com/GJComponents/com_osmap/archive/refs/heads/main.zip
             </downloadurl>
         </downloads>
         <targetplatform name="joomla" version=".*"/>
