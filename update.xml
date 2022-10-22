@@ -1,6 +1,6 @@
 <updates>
     <update>
-        <name>COM_OSMAP</name>
+        <name>COM_OSMAP by Gartes</name>
         <description><![CDATA[Компонент создания карты сайта by Gartes]]></description>
         <type>component</type>
         <element>com_osmap</element>
