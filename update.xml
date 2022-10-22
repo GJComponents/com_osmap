@@ -1,11 +1,11 @@
 <updates>
     <update>
-        <name>COM_OSMAP by Gartes</name>
+        <name><![CDATA[COM_OSMAP by Gartes]]></name>
         <description><![CDATA[Компонент создания карты сайта by Gartes]]></description>
         <type>component</type>
         <element>com_osmap</element>
         <version>6.0.8</version>
-        <client>administrator</client> <!-- site(0) or administrator(1) -->
+        <client>administrator</client>
 
         <infourl title="Joomla!">https://www.joomla.org/announcements/release-news/5765-joomla-3-9-6-release.html
         </infourl>
