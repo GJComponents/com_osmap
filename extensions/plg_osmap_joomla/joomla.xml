@@ -7,8 +7,9 @@
     <copyright>Copyright 2016-2020 Joomlashack.com. All rights reserved</copyright>
     <license>GNU GPL; see LICENSE file</license>
     <description>PLG_OSMAP_JOOMLA_PLUGIN_DESCRIPTION</description>
-    <version>5.0.2</version>
-    <creationDate>November 09 2021</creationDate>
+    <creationDate>21.10.22-16:42</creationDate>
+    <version>5.0.3</version>
+    
     <variant>FREE</variant>
 
     <files>
@@ -71,6 +72,7 @@
                     <option value="3">PLG_OSMAP_JOOMLA_OPTION_HTML_ONLY</option>
                 </field>
 
+                <!-- Показать неавторизованные ссылки -->
                 <field name="show_unauth"
                        type="list"
                        default="0"

@@ -148,10 +148,7 @@ class Standard implements SitemapInterface
 
             $eventParams = [$this, $callback];
             $results     = Factory::getApplication()->triggerEvent('osmapOnBeforeCollectItems', $eventParams);
-            
 
-
-            
             // Если Плагин попросил остановить траверс
             // A plugin asked to stop the traverse
             if (in_array(true, $results)) {

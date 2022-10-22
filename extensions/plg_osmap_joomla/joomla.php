@@ -35,8 +35,11 @@ use Joomla\Utilities\ArrayHelper;
 
 defined('_JEXEC') or die();
 
+use Joomla\CMS\Language\Multilanguage;
+use Joomla\CMS\Language\LanguageHelper;
 JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
 JLoader::register('ContentHelperQuery', JPATH_SITE . '/components/com_content/helpers/query.php');
+
 
 /**
  * Handles standard Joomla's Content articles/categories
@@ -59,6 +62,16 @@ class PlgOSMapJoomla extends Base implements ContentInterface
      * @var bool
      */
     protected static $prepareContent = null;
+	/**
+	 * @var array Массив включенных языков сайта
+	 * @since version
+	 */
+	protected static $languagesArr = [];
+	/**
+	 * @var string язык для которого создается карта компонента
+	 * @since version
+	 */
+	protected static $languageQuery = '';
 
     /**
      * Возвращает уникальный экземпляр плагина
@@ -71,23 +84,22 @@ class PlgOSMapJoomla extends Base implements ContentInterface
     public static function getInstance()
     {
 
-        /*try
-        {
-            // Code that may throw an Exception or Error.
-
-             throw new \Exception('Code Exception '.__FILE__.':'.__LINE__) ;
-        }
-        catch (\Exception $e)
-        {
-            // Executed only in PHP 5, will not be reached in PHP 7
-            echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
-            echo'<pre>';print_r( $e );echo'</pre>'.__FILE__.' '.__LINE__;
-            die(__FILE__ .' '. __LINE__ );
-        }*/
-
-
         if (empty(static::$instance)) {
             $dispatcher       = Factory::getDispatcher();
+			$app = \Joomla\CMS\Factory::getApplication();
+	        self::$languageQuery = $app->input->get( 'language' , '*' );
+
+
+			// Для многоязычных сайтов
+			if (Multilanguage::isEnabled()) {
+
+				foreach ( LanguageHelper::getLanguages() as $language)
+				{
+					self::$languagesArr[$language->lang_code] = $language->sef ;
+				}#END FOREACH
+	        }
+
+
             static::$instance = new self($dispatcher);
         }
 
@@ -104,8 +116,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
      */
     public function getComponentElement()
     {
-
-        return 'com_content';
+		return 'com_content';
     }
 
     /**
@@ -125,20 +136,6 @@ class PlgOSMapJoomla extends Base implements ContentInterface
     public static function prepareMenuItem($node, $params)
     {
 
-        try
-        {
-            // Code that may throw an Exception or Error.
-
-              // throw new \Exception('Code Exception '.__FILE__.':'.__LINE__) ;
-        }
-        catch (\Exception $e)
-        {
-            // Executed only in PHP 5, will not be reached in PHP 7
-            echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
-            echo'<pre>';print_r( $e );echo'</pre>'.__FILE__.' '.__LINE__;
-            die(__FILE__ .' '. __LINE__ );
-        }
-
         static::checkMemory();
 
         $db        = Factory::getDbo();
@@ -154,6 +151,9 @@ class PlgOSMapJoomla extends Base implements ContentInterface
 
         $view = ArrayHelper::getValue($linkVars, 'view', '');
         $id   = ArrayHelper::getValue($linkVars, 'id', 0);
+
+
+
 
         switch ($view) {
             case 'archive':
@@ -206,7 +206,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
 
                 $db->setQuery($query);
 
-                if (($item = $db->loadObject()) != null) {
+                if ( ( $item = $db->loadObject() ) != null) {
                     // Set the node UID
                     $node->uid = 'joomla.article.' . $id;
 
@@ -252,6 +252,8 @@ class PlgOSMapJoomla extends Base implements ContentInterface
                     return false;
                 }
 
+//	            echo'<pre>';print_r( $node->fullLink );echo'</pre>'.__FILE__.' '.__LINE__;
+
                 break;
         }
 
@@ -273,8 +275,6 @@ class PlgOSMapJoomla extends Base implements ContentInterface
      */
     public static function getTree($collector, $parent, $params)
     {
-
-
         $db = Factory::getDbo();
 
         $linkQuery = parse_url($parent->link);
@@ -330,7 +330,20 @@ class PlgOSMapJoomla extends Base implements ContentInterface
             Factory::getLanguage()->load('plg_content_pagebreak');
         }
 
-        switch ($view) {
+
+//	    $app = \Joomla\CMS\Factory::getApplication();
+//	    $component = $app->input->get('component' , false );
+//		$idArr = [1,2,9,10,18,19,20 ]; // article
+//		$idArr = [ 14, ];
+//	    if ( $component && $component == 'com_content' && $view == 'category' && !in_array( $id , $idArr)  )
+//	    {
+//		    echo'<pre>';print_r( $id );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    echo'<pre>';print_r( $view );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    die(__FILE__ .' '. __LINE__ );
+//	    }#END IF
+
+
+	    switch ($view) {
             case 'category':
                 if (empty($id)) {
                     $id = intval($params->get('id', 0));
@@ -462,7 +475,8 @@ class PlgOSMapJoomla extends Base implements ContentInterface
                 'a.modified_time AS modified',
                 'a.params',
                 'a.metadata',
-                'a.metakey'
+                'a.metakey',
+                'a.language'
             ])
             ->from('#__categories AS a')
             ->where($where)
@@ -480,7 +494,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
             {
                 $collector->changeLevel(1);
 
-                foreach ($items as $item)
+                foreach ($items as $i => $item)
                 {
                     $node = (object)[
                         'id' => $item->id,
@@ -509,9 +523,38 @@ class PlgOSMapJoomla extends Base implements ContentInterface
                     }
                     $node->keywords = $keywords;
 
+
+
+
+					if ( key_exists( $item->language , self::$languagesArr ))
+					{
+						if ( self::$languageQuery != $item->language)
+						{
+							unset( $items[$i] );
+							continue ;
+						}#END IF
+                    }#END IF
+
                     $node->slug = $item->route ? ($item->id . ':' . $item->route) : $item->id;
-                    $node->link = ContentHelperRoute::getCategoryRoute($node->slug);
-                    $node->itemid = $itemid;
+//                    $node->link = ContentHelperRoute::getCategoryRoute($node->slug);
+
+
+//	                $app = \Joomla\CMS\Factory::getApplication();
+//					echo'<pre>';print_r( $app->input );echo'</pre>'.__FILE__.' '.__LINE__;
+//	                die(__FILE__ .' '. __LINE__ );
+
+
+                    // Создать ссылку на категорию
+	                $node->link = JRoute::_(
+						ContentHelperRoute::getCategoryRoute( $item->id , $item->language ),  true, JRoute::TLS_IGNORE,  true ) ;
+
+//	                echo'<pre>';print_r( $item->language  );echo'</pre>'.__FILE__.' '.__LINE__;
+//	                echo'<pre>';print_r( $node->link );echo'</pre>'.__FILE__.' '.__LINE__;
+//	                die(__FILE__ .' '. __LINE__ );
+
+					$node->link = ContentHelperRoute::getCategoryRoute($node->slug);
+
+					$node->itemid = $itemid;
 
                     // Correct for an issue in Joomla core with occasional empty variables
                     $linkUri = new Uri($node->link);
@@ -533,6 +576,9 @@ class PlgOSMapJoomla extends Base implements ContentInterface
     }
 
     /**
+     * Получить все элементы контента в категории контента.
+     * Возвращает массив всех содержащихся элементов содержимого.
+     *
      * Get all content items within a content category.
      * Returns an array of all contained content items.
      *
@@ -543,7 +589,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
      *
      * @return void
      * @throws Exception
-     *
+     * @since 3.9
      */
     protected static function includeCategoryContent($collector, $parent, $catid, $params)
     {
@@ -583,9 +629,11 @@ class PlgOSMapJoomla extends Base implements ContentInterface
 
         if ($catid == 'featured') {
             $where[] = 'a.featured=1';
-        } elseif ($catid == 'archived') {
+        }
+		elseif ($catid == 'archived') {
             $where = ['a.state=2'];
-        } elseif (is_numeric($catid)) {
+        }
+		elseif (is_numeric($catid)) {
             $where[] = 'a.catid=' . (int)$catid;
         }
 
@@ -637,6 +685,8 @@ class PlgOSMapJoomla extends Base implements ContentInterface
 
         $items = $db->loadObjectList();
 
+
+
         if (count($items) > 0) {
             $collector->changeLevel(1);
 
@@ -644,7 +694,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
             $paramExpandFeatured   = $params->get('expand_featured', 1);
             $paramIncludeArchived  = $params->get('include_archived', 2);
 
-            foreach ($items as $item) {
+            foreach ($items as $i => $item) {
                 $node = (object)[
                     'id'                       => $item->id,
                     'uid'                      => 'joomla.article.' . $item->id,
@@ -679,7 +729,24 @@ class PlgOSMapJoomla extends Base implements ContentInterface
 
                 $node->slug    = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
                 $node->catslug = $item->catid;
-                $node->link    = ContentHelperRoute::getArticleRoute($node->slug, $node->catslug);
+
+
+
+				// Если материал не из того языка
+	            if ( key_exists( $item->language , self::$languagesArr ))
+	            {
+		            if ( self::$languageQuery != $item->language)
+		            {
+			            unset( $items[$i] );
+			            continue ;
+		            }#END IF
+	            }#END IF
+
+//                $node->link    = ContentHelperRoute::getArticleRoute( $node->slug, $node->catslug);
+				$rawLink = ContentHelperRoute::getArticleRoute( $item->id , $item->catid , $item->language) ;
+	            // Создать ссылку для статьи
+	            $node->link =  JRoute::_( $rawLink , true , JRoute::TLS_IGNORE , true );
+
 
                 // Set the visibility for XML or HTML sitempas
                 if ($catid == 'featured') {
@@ -732,7 +799,7 @@ class PlgOSMapJoomla extends Base implements ContentInterface
                     static::printSubNodes($collector, $parent, $params, $node->subnodes, $node);
                 }
             }
-
+//	        die(__FILE__ .' '. __LINE__ );
             $collector->changeLevel(-1);
         }
     }

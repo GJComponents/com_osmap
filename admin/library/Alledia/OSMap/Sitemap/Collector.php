@@ -26,6 +26,8 @@ namespace Alledia\OSMap\Sitemap;
 
 use Alledia\OSMap\Factory;
 use Alledia\OSMap\Helper\General;
+use JDatabaseDriverMysqli;
+use JDatabaseQueryMysqli;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Registry\Registry;
 
@@ -190,18 +192,30 @@ class Collector
     {
 
 
+        /**
+         * @var array $menus Список меню сайта
+         */
         $menus = $this->getSitemapMenus();
+        
 
+
+        
         $this->counter = 0;
         if ($menus) {
             $this->getLegacyItemsSettings();
             $this->getItemsSettings();
 
+//            echo'<pre>';print_r( $menus );echo'</pre>'.__FILE__.' '.__LINE__;
+//            die(__FILE__ .' '. __LINE__ );
+
+			// Перебираем меню сайта - получить пункты для каждого меню
             foreach ($menus as $menu) {
                 $this->currentMenu = &$menu;
 
-                //
+                // Получить пункты меню в виде дерева
                 $items = $this->getMenuItems($menu);
+//                echo'<pre>';print_r( $menu );echo'</pre>'.__FILE__.' '.__LINE__;
+//                echo'<pre>';print_r( $items );echo'</pre>'.__FILE__.' '.__LINE__;
 
 
                 $key = 0 ;
@@ -209,64 +223,88 @@ class Collector
 
 
 
+					// если ссылка элемента находится в массиве черного списка.
+	                if ($this->itemIsBlackListed($item))
+	                {
+		                $item = null;
+		                continue;
+	                }
 
-                    if ( $this->itemIsBlackListed( $item ) ) {
-                        $item = null;
-                        continue;
-                    }
+	                /**
+	                 * Сохранить идентификатор текущего пункта меню. Добавлено, чтобы использовать его при определении
+	                 * хэша настроек узла, так же пункты, но из разных меню могут иметь индивидуальные настройки
+	                 * Store the current menu item id. Added to use it while defining the node's settings hash, so same
+	                 * items, but from different menus can have individual settings
+	                 */
+	                $this->currentMenuItemId = $item['id'];
 
-                    // Store the current menu item id. Added to use it while defining the node's settings hash, so same
-                    // items, but from different menus can have individual settings
-                    $this->currentMenuItemId = $item['id'];
+	                /**
+	                 * Установите UID пункта меню. UID может быть изменен сторонними плагинами в зависимости от содержимого.
+	                 * Set the menu item UID. The UID can be changed by 3rd party plugins, according to the content
+	                 */
+	                $item['uid'] = 'menuitem.' . $item['id'];
 
-                    // Set the menu item UID. The UID can be changed by 3rd party plugins, according to the content
-                    $item['uid'] = 'menuitem.' . $item['id'];
+	                /**
+	                 * Сохраните настройки меню для использования в submitItemToCallback, вызываемом обратными вызовами.
+	                 * Store the menu settings to use in the submitItemToCallback called by callbacks
+	                 */
+	                $this->tmpItemDefaultSettings['changefreq'] = $menu->changefreq;
+	                $this->tmpItemDefaultSettings['priority']   = $menu->priority;
 
-                    // Store the menu settings to use in the submitItemToCallback called by callbacks
-                    $this->tmpItemDefaultSettings['changefreq'] = $menu->changefreq;
-                    $this->tmpItemDefaultSettings['priority']   = $menu->priority;
-
-                    // Check the level of menu
-                    $level = (int)$item['level'] - 1;
-                    if ( $level !== $this->currentLevel ) {
-                        $this->changeLevel($level - $this->currentLevel);
-                    }
-
-
-//                    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
-
-//                    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
-//                    die(__FILE__ .' '. __LINE__ );
-
-
-                    /**
-                     * Перебор плагинов - и добавление в $item
-                     *
-                     * Отправьте элемент и подготовьте его, вызвав плагины
-                     * Submit the item and prepare it calling the plugins
-                     */
-                    $this->submitItemToCallback($item, $callback, true);
+	                // Check the level of menu
+	                $level = (int) $item['level'] - 1;
+	                if ($level !== $this->currentLevel)
+	                {
+		                $this->changeLevel($level - $this->currentLevel);
+	                }
 
 
 
-                    /**
-                     * Внутренние ссылки могут запускать плагины для захвата большего количества элементов.
-                     * Дочерние элементы не отображаются, если родительский элемент игнорируется
-                     *
-                     * Internal links can trigger plugins to grab more items
-                     * The child items are not displayed if the parent item is ignored
-                     */
-                    if ($item->isInternal && !$item->ignore) {
-                        /**
-                         * Вызовите плагин, чтобы получить дополнительные элементы, связанные с ним
-                         * Call the plugin to get additional items related to it
-                         */
-                        $this->callPluginsGetItemTree($item, $callback);
-                    }
 
-                    // Make sure the memory is cleaned up
-                    $item = null;
+	                $item['menutype'] = $menu->menutype ;
+
+					
+	                /**
+	                 * Перебор плагинов - и добавление в $item
+	                 *
+	                 * Отправьте элемент и подготовьте его, вызвав плагины
+	                 * Submit the item and prepare it calling the plugins
+	                 */
+	                $this->submitItemToCallback($item, $callback, true);
+
+	                $mTypeArr = [  'mainmenu',  'account-menu', ];
+	                if (!in_array( $item->menutype , $mTypeArr))
+	                {
+//		                echo'<pre>';print_r( $menu );echo'</pre>'.__FILE__.' '.__LINE__;
+//		                echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
+	                }#END IF
+
+	                /**
+	                 * Внутренние ссылки могут запускать плагины для захвата большего количества элементов.
+	                 * Дочерние элементы не отображаются, если родительский элемент игнорируется
+	                 *
+	                 * Internal links can trigger plugins to grab more items
+	                 * The child items are not displayed if the parent item is ignored
+	                 */
+	                if ($item->isInternal && !$item->ignore)
+	                {
+		                /**
+		                 * Вызовите плагин, чтобы получить дополнительные элементы, связанные с ним
+		                 * Call the plugin to get additional items related to it
+		                 */
+		                $this->callPluginsGetItemTree($item, $callback);
+	                }
+
+	                // Make sure the memory is cleaned up
+	                $item = null;
                 }
+
+	            if (!in_array($menu->menutype, $mTypeArr))
+	            {
+//		            die(__FILE__ .' '. __LINE__ );
+	            }#END IF
+
+
                 $items = [];
                 unset($items);
             }
@@ -282,10 +320,9 @@ class Collector
 
     /**
      * Перебор плагинов - и добавление в $item
-     * 
-     * Отправьте элемент на обратный вызов, проверив дублирование и приращение
-     * счетчик. Он может получить массив или объект и вернуть true или false.
-     * по результату обратного звонка.
+     *
+     * Отправьте элемент на обратный вызов, проверив дублирование и приращение счетчика.
+     * Он может получить массив или объект и вернуть TRUE или FALSE по результату обратного звонка.
      *
      * Submit the item to the callback, checking duplicity and incrementing
      * the counter. It can receive an array or object and returns true or false
@@ -300,12 +337,14 @@ class Collector
      */
     public function submitItemToCallback(&$item, callable $callback, bool $prepareItem = false): bool
     {
-
-
+	    $mTypeArr = [  'mainmenu',  'account-menu', ];
 
         $currentMenuItemId = $this->getCurrentMenuItemId();
 
         $item = (object)$item;
+
+
+
 
         // Add the menu information
         $item->menuItemId    = $this->currentMenu->id;
@@ -313,8 +352,17 @@ class Collector
         $item->menuItemType  = $this->currentMenu->menutype;
 
 
+        // Преобразует в экземпляр Item, устанавливая внутренние атрибуты
         // Converts to an Item instance, setting internal attributes
         $item = new Item($item, $currentMenuItemId);
+
+
+	    if (!in_array( $item->menutype , $mTypeArr))
+	    {
+
+//		    echo'<pre>';print_r( $currentMenuItemId );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
+	    }#END IF
 
         if ($prepareItem) {
             // Вызов плагинов для подготовки элемента
@@ -322,6 +370,7 @@ class Collector
             $this->callPluginsPreparingTheItem($item);
         }
 
+        // Убедитесь, что у вас правильный формат даты (UTC)
         // Make sure to have the correct date format (UTC)
         $item->setModificationDate();
 
@@ -335,6 +384,7 @@ class Collector
         $this->checkParentIsUnpublished($item);
         $this->checkDuplicatedUIDToIgnore($item);
 
+        // Убедитесь, что элемент может отображаться как уникальный для XML-карты сайта.
         // Verify if the item can be displayed to count as unique for the XML sitemap
         if (
             !$item->ignore
@@ -342,7 +392,8 @@ class Collector
             && $item->visibleForRobots
             && (!$item->duplicate || !$this->params->get('ignore_duplicated_uids', 1))
         ) {
-            // Check if the URL is not duplicated (specially for the XML sitemap)
+            // Проверьте, не дублируется ли URL-адрес (особенно для карты сайта XML)
+	        // Check if the URL is not duplicated (specially for the XML sitemap)
             $this->checkDuplicatedURLToIgnore($item);
 
             if (!$item->duplicate || !$this->params->get('ignore_duplicated_uids', 1)) {
@@ -367,7 +418,7 @@ class Collector
      *  - changefrq
      *  - ordering
      *
-     * @return object[];
+     * @return object ;
      * @since 3.9
      */
     protected function getSitemapMenus(): array
@@ -392,19 +443,34 @@ class Collector
     }
 
     /**
+     * Получить пункты меню в виде дерева
      * Get the menu items as a tree
      *
      * @param object $menu
      *
      * @return array
+     *
+     * @since 3.9
      */
     protected function getMenuItems(object $menu): array
     {
+	    /**
+	     * @var bool $ignore_hidden_menus Игнорировать скрытые меню
+	     */
+	    $ignore_hidden_menus = $this->params->get('ignore_hidden_menus', false) ;
+
         $container = Factory::getPimpleContainer();
-        $db        = $container->db;
+	    /**
+	     * @var JDatabaseDriverMysqli $db
+	     */
+		$db        = $container->db;
         $app       = $container->app;
+
         $lang      = $container->language;
 
+        /**
+         * @var JDatabaseQueryMysqli $query
+         */
         $query = $db->getQuery(true)
             ->select([
                 'm.id',
@@ -417,6 +483,7 @@ class Collector
                 'm.params',
                 'm.parent_id',
                 'm.browserNav',
+                'm.language',
                 'm.link',
                 '1 AS ' . $db->quoteName('isMenuItem'), // Say that the menu came from a menu
                 '0 AS ' . $db->quoteName('ignore')     // Flag that allows child classes choose to ignore items
@@ -432,17 +499,45 @@ class Collector
             ])
             ->order('m.lft');
 
+	    /**
+	     * TODO - Совместить языки с настройками карты сайта
+	     * /administrator/index.php?option=com_osmap&view=sitemaps
+	     */
+	    $languages = \Joomla\CMS\Language\LanguageHelper::getKnownLanguages() ;
+	    foreach ( $languages as $language)
+	    {
+		    
+		}#END FOREACH
+
         if ($app->isClient('site')) {
             if ($app->getLanguageFilter()) {
+				// применить метод $db->quote -- к каждому элементу массива
                 $languageTags = array_map([$db, 'quote'], [$lang->getTag(), '*']);
-
-                $query->where(sprintf('m.language IN (%s)', join(',', $languageTags)));
+//				$query->where( sprintf('m.language IN (%s)', join(',', $languageTags)));
             }
         }
 
         $items = $db->setQuery($query)->loadAssocList();
 
-        if ($this->params->get('ignore_hidden_menus', false)) {
+
+//	    echo'<pre>';print_r( $ignore_hidden_menus );echo'</pre>'.__FILE__.' '.__LINE__;
+	    $mTypeArr = [
+		    'mainmenu',
+		    'account-menu',
+	    ];
+	    if ( !in_array( $menu->menutype , $mTypeArr ))
+	    {
+//		    echo'<pre>';print_r(  $menu->menutype );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    echo'<pre>';print_r(  $query->dump() );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    echo'<pre>';print_r(  $items );echo'</pre>'.__FILE__.' '.__LINE__;
+//		echo'<pre>';print_r( $items );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    die(__FILE__ .' '. __LINE__ );
+	    }#END IF
+
+
+
+
+        if ( $ignore_hidden_menus ) {
             $items = array_filter(
                 $items,
                 function ($menu) {
@@ -662,11 +757,13 @@ class Collector
     }
 
     /**
+     * Возвращает true, если ссылка элемента находится в массиве черного списка.
      * Returns true if the link of the item is in the blacklist array.
      *
      * @param array $item
      *
      * @return bool
+     * @since 3.9
      */
     protected function itemIsBlackListed(array $item): bool
     {
@@ -695,12 +792,16 @@ class Collector
     }
 
     /**
+     * Метод, вызываемый устаревшими плагинами, который будет передавать новый элемент в
+     * перезвонить. Возвращает результат обратного вызова, преобразованный в логическое значение.
+     *
      * Method called by legacy plugins, which will pass the new item to the
      * callback. Returns the result of the callback converted to boolean.
      *
      * @param array|object $node
      *
      * @return bool
+     * @since 3.9
      */
     public function printNode($node): bool
     {

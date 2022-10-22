@@ -48,6 +48,19 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
         && $node->parentIsVisibleForRobots
         && $node->visibleForXML
         && trim($node->fullLink) != '';
+    try
+    {
+        // Code that may throw an Exception or Error.
+
+//         throw new \Exception('Code Exception '.__FILE__.':'.__LINE__) ;
+    }
+    catch (\Exception $e)
+    {
+        // Executed only in PHP 5, will not be reached in PHP 7
+        echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
+        echo'<pre>';print_r( $e );echo'</pre>'.__FILE__.' '.__LINE__;
+        die(__FILE__ .' '. __LINE__ );
+    }
 
 
     if ($display && !$node->isInternal) {
@@ -59,7 +72,7 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
     /**
      * ================================================================================================================
      * TODO : ERROR THIS -> Ошибка в этом месте  - что то связанное с языками
-     * При установке или обновлении - нужно проверить что бы небыло переопределения в шаблоне сайта
+     * При установке или обновлении - нужно проверить что бы не было переопределения в шаблоне сайта
      * /public_html/components/com_osmap/views/xml/tmpl/default_standard.php:63
      */
     if (!$node->hasCompatibleLanguage()) {
@@ -71,12 +84,11 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
      * ================================================================================================================
      */
 
-
     /**
      * START - Background Creation For Menu
      * - Только для пунктов меню. Что бы они не падали в map.xml - созданные плагинами
      * TODO : Пункты меню будут записываться в отдельный файл menu-map.xml
-     * Проверяем - если влючено фоновое создание и
+     * Проверяем - если включено фоновое создание и
      */
     $backgroundCreation = $this->osmapParams->get('background_creation' , 0 );
     if ( $backgroundCreation )
@@ -102,17 +114,23 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
 
 
     }#END IF
-
-
     /**
      * END - Background Creation For Menu
      */
+
+
 
     if (!$display) {
         return false;
     }
     
     echo $debug;
+
+
+
+
+
+
 
     echo '<url>';
     echo '<loc>' . $node->fullLink . '</loc>';
@@ -130,10 +148,7 @@ $printNodeCallback = function (Item $node) use ($showExternalLinks, $ignoreDupli
 };
 
 $app = \Joomla\CMS\Factory::getApplication();
-if ($app->input->get('task', false, 'RAW') !== 'background_map'  )
-{
-    echo $this->addStylesheet();
-}#END IF
+if ($app->input->get('task', false, 'RAW') !== 'background_map'  )  echo $this->addStylesheet(); #END IF
 
 
 echo $debug . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . $debug;

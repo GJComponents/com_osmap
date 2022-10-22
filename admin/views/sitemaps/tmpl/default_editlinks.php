@@ -39,10 +39,7 @@ foreach ($languages as $language) :
     if ($language) {
         $linkQuery['lang'] = $language->sef;
 
-        $flag = HTMLHelper::_(
-            'image',
-            'mod_languages/' . $language->image . '.gif',
-            $language->title,
+        $flag = HTMLHelper::_( 'image', 'mod_languages/' . $language->image . '.gif',  $language->title,
             null,
             true
         );

@@ -42,6 +42,10 @@ class OSMapViewSitemapItems extends OSMap\View\Admin\AbstractList
         $this->sitemapId = $app->input->getInt('id', 0);
         $this->language  = $app->input->get('lang', '');
 
+		echo'<pre>';print_r( $this->language );echo'</pre>'.__FILE__.' '.__LINE__;
+		die(__FILE__ .' '. __LINE__ );
+
+
         $this->setToolBar();
 
         parent::display($tpl);

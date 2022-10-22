@@ -83,12 +83,16 @@ class OSMapViewXml extends HtmlView
      *
      * @return void
      * @throws Exception
+     * @since 3.9
      */
     public function display($tpl = null)
     {
 
         $document = Factory::getDocument();
+//		echo'<pre>';print_r( $document );echo'</pre>'.__FILE__.' '.__LINE__;
+//		die(__FILE__ .' '. __LINE__ );
 
+		
 
 
         if ($document->getType() != 'xml') {
@@ -134,10 +138,18 @@ class OSMapViewXml extends HtmlView
         $this->osmapParams->set('background_creation' , 1 );
         // TODO -------------------------------------------------
 
-
+//	    $document->setLanguage('ua-ua');
 
         $this->language    = $document->getLanguage();
+	    // TODO - Пытаемся получить из $app->input
+//		$this->language  = $app->input->get('lang', '');
+
+//		echo'<pre>';print_r( $this->language );echo'</pre>'.__FILE__.' '.__LINE__;
+//		die(__FILE__ .' '. __LINE__ );
+
         $this->newsCutoff  = new DateTime('-' . $this->sitemap->newsDateLimit . ' days');
+
+
 
         if ($this->params->get('show_page_heading', 1)) {
             $this->pageHeading = $this->params->get('page_heading')

@@ -152,11 +152,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                     );
                                     ?>
                                 </td>
-
+                                <!-- Name -->
                                 <td class="text-nowrap">
                                     <?php echo HTMLHelper::_('link', $editLink, $this->escape($this->item->name)); ?>
                                 </td>
-
+                                <!-- Edit Links -->
                                 <td class="text-nowrap <?php echo $editLinksClass; ?>">
                                     <?php echo $this->loadTemplate('editlinks'); ?>
                                 </td>

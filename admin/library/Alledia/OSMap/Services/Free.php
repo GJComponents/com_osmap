@@ -100,6 +100,7 @@ class Free implements ServiceProviderInterface
      * @param Pimple $pimple
      *
      * @return void
+     * @since 3.9
      */
     protected function registerHelper(Pimple $pimple)
     {

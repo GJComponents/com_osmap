@@ -245,6 +245,7 @@ class Item extends CMSObject
 
     /**
      * @inheritDoc
+     * @since 3.9
      */
     public function __construct($itemData, $currentMenuItemId)
     {
@@ -258,7 +259,8 @@ class Item extends CMSObject
         $this->isMenuItem = (bool)$this->isMenuItem;
         $this->params     = new Registry($this->params);
 
-        // Check if the link is an internal link
+        // Проверить, является ли ссылка внутренней
+	    // Check if the link is an internal link
         $this->isInternal = $this->checkLinkIsInternal();
 
         $this->prepareDate('created');
@@ -271,6 +273,12 @@ class Item extends CMSObject
         $this->extractComponentFromLink();
         $this->setFullLink();
 
+	    if ( /*$this->id == 1576 ||*/ $this->id == 1607 )
+	    {
+//		    echo'<pre>';print_r( $this  );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    die(__FILE__ .' '. __LINE__ );
+	    }#END IF
+		
         // Sanitize internal links
         if ($this->isInternal) {
             $this->sanitizeFullLink();
@@ -310,7 +318,10 @@ class Item extends CMSObject
     }
 
     /**
+     * Проверить, является ли ссылка внутренней
+     *
      * @return bool
+     * @since 3.9
      */
     protected function checkLinkIsInternal(): bool
     {
@@ -367,18 +378,12 @@ class Item extends CMSObject
      */
     public function hasCompatibleLanguage(): bool
     {
-
-
-
-
         // Check the language
         if (Multilanguage::isEnabled() && isset($this->language)) {
             
             if ($this->language === '*' || $this->language === Factory::getLanguage()->getTag()) {
                 return true;
             }
-
-
             return false;
         }
 
@@ -409,7 +414,8 @@ class Item extends CMSObject
      */
     protected function setLink()
     {
-        // If is an alias, use the Itemid stored in the parameters to get the correct url
+        // Если это alias, используйте Itemid, хранящийся в параметрах, чтобы получить правильный URL-адрес.
+	    // If is an alias, use the Itemid stored in the parameters to get the correct url
         if ($this->type === 'alias') {
             // Get the related menu item's link
             $db = Factory::getDbo();
@@ -417,9 +423,14 @@ class Item extends CMSObject
             $query = $db->getQuery(true)
                 ->select('link')
                 ->from('#__menu')
-                ->where('id = ' . $db->quote($this->params->get('aliasoptions')));
+                ->where('id = ' . $db->quote( $this->params->get('aliasoptions') ) );
 
-            $this->link = $db->setQuery($query)->loadResult();
+			$Result = $db->setQuery($query)->loadResult();
+
+//			echo'<pre>';print_r( $query->dump() );echo'</pre>'.__FILE__.' '.__LINE__;
+//			echo'<pre>';print_r( $Result );echo'</pre>'.__FILE__.' '.__LINE__;
+
+            $this->link = $Result ;
         }
     }
 
@@ -436,26 +447,54 @@ class Item extends CMSObject
     }
 
     /**
+     * Преобразует текущую ссылку в полный URL-адрес, включая базовый URI.
+     * Если пункт является основным меню, будет возвращен базовый URI. Если внутренний,
+     * вернет маршрутизируемый полный URL-адрес (SEF, если включен). Если это внешний
+     * URL, не изменит ссылку.
+     *
      * Converts the current link to a full URL, including the base URI.
      * If the item is the home menu, will return the base URI. If internal,
      * will return a routed full URL (SEF, if enabled). If it is an external
      * URL, won't change the link.
      *
      * @return void
+     * @since 3.9
      */
     protected function setFullLink()
     {
         $container = Factory::getPimpleContainer();
 
+
+
+		
+
+
+
+		 
+		// Для домашней страницы 
         if ($this->home) {
-            // Correct the URL for the home page.
-            // Check if multi-language is enabled to use the proper route
+ 
+	        /**
+	         * Исправьте URL-адрес домашней страницы.
+	         * Проверьте, включена ли многоязычность, чтобы использовать правильный маршрут
+	         *
+	         * Correct the URL for the home page.
+	         * Check if multi-language is enabled to use the proper route
+	         */
             if (Multilanguage::isEnabled()) {
                 $lang = Factory::getLanguage();
                 $tag  = $lang->getTag();
                 $lang = null;
 
+	            /**
+	             * @var array $homes
+	             */
                 $homes = Multilanguage::getSiteHomePages();
+
+	            /**
+	             * TODO - Берем тэг языка из пункта меню
+	             */
+				$tag = $this->language ;
 
                 $home = $homes[$tag] ?? $homes['*'];
 
@@ -506,27 +545,54 @@ class Item extends CMSObject
                 return;
             }
         }
-
+	    /**
+	     * Для псевдонимов меню
+	     */
         if ($this->type === 'alias') {
-            // Use the destination itemid, instead of the alias' item id.
-            // This will make sure we have the correct routed url.
+	        /**
+	         * Используйте идентификатор элемента назначения вместо идентификатора элемента псевдонима.
+	         * Это позволит убедиться, что у нас есть правильный маршрутизируемый URL.
+	         *
+	         * Use the destination itemid, instead of the alias' item id.
+	         * This will make sure we have the correct routed url.
+	         */
             $this->fullLink = 'index.php?Itemid=' . $this->params->get('aliasoptions');
         }
 
-        // If is a menu item but not an alias, force to use the current menu's item id
+	    if ( $this->id == 1576 || $this->id == 1607 )
+	    {
+//		    echo'<pre>';print_r( $this  );echo'</pre>'.__FILE__.' '.__LINE__;
+//		    die(__FILE__ .' '. __LINE__ );
+	    }#END IF
+
+	    /**
+	     * Если это пункт меню, но не псевдоним, принудительно использовать идентификатор
+	     * текущего пункта меню.
+	     * If is a menu item but not an alias, force to use the current menu's item id
+	     */
         if ($this->isMenuItem && $this->type !== 'alias' && $this->type !== 'url') {
             $this->fullLink = 'index.php?Itemid=' . $this->id;
         }
 
-        // If is not a menu item, use as base for the fullLink, the item link
+
+//	    echo'<pre>';print_r( $this->type  );echo'</pre>'.__FILE__.' '.__LINE__ . '<br>';
+//	    echo'<pre>';print_r( $this->fullLink  );echo'</pre>'.__FILE__.' '.__LINE__ . '<br>';
+	    /**
+	     * Если это не элемент меню, используйте в качестве основы для полной ссылки ссылку на элемент
+	     * If is not a menu item, use as base for the fullLink, the item link
+	     */
         if (!$this->isMenuItem) {
             $this->fullLink = $this->link;
         }
 
+		// Если ссылка внутренняя
         if ($this->isInternal) {
-            $this->fullLink = $container->router->routeURL($this->fullLink, true);
+            $this->fullLink = $container->router->routeURL( $this->fullLink, true);
         }
 
+
+		
+		
         $this->fullLink = $container->router->sanitizeURL($this->fullLink);
     }
 

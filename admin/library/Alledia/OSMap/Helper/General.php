@@ -159,6 +159,9 @@ abstract class General
             )
             ->where('enabled = 1')
             ->order('folder DESC, ordering');
+
+
+
         // Если включено фоновое создание
         if ( $backgroundCreation && $app->input->get('task' , false ) == 'background_map'  )
         {
@@ -175,8 +178,9 @@ abstract class General
 
             $query->where('element = ' . $db->quote( $componentName ) );
         }#END IF
-//        echo $query->dump();
-//        die(__FILE__ .' '. __LINE__ );
+//	    echo $query->dump();
+//
+//		die(__FILE__ .' '. __LINE__ );
 
 
         return $db->setQuery($query)->loadObjectList();
@@ -298,10 +302,6 @@ abstract class General
             $compatiblePlugins = [];
 
             $plugins = static::getPluginsFromDatabase();
-
-
-
-
 
             if ($plugins) {
                 foreach ($plugins as $plugin) {
@@ -436,6 +436,7 @@ abstract class General
     }
 
     /**
+     * Убедитесь, что загружены соответствующие языковые файлы компонентов.
      * Make sure the appropriate component language files are loaded
      *
      * @param string $option
@@ -444,6 +445,7 @@ abstract class General
      *
      * @return void
      * @throws \Exception
+     * @since 3.9
      */
     public static function loadOptionLanguage(
         string $option = 'com_osmap',
@@ -497,16 +499,36 @@ abstract class General
     }
 
     /**
-     * Создать файл map.xml для выбранного компанента
+     * Создать файл map.xml для выбранного компонента
      * @param string $mapData
-     * @param string $component - название компанента com_menu | com_content
+     * @param string $component - название компонента com_menu | com_content
      * @return string[]|void
      * @since 3.9
      */
     public static function createFileMapComponent( string $mapData , string $component = 'com_menu' ){
         $paramsComponent = ComponentHelper::getComponent('com_osmap', $strict = false);
+
+		$app = \Joomla\CMS\Factory::getApplication();
+		$lang = $app->input->get('lang' , false  , 'STRING');
+	    if ( $lang )
+	    {
+		    $component .= '-'.$lang ;
+	    }#END IF
+//		echo'<pre>';print_r( $component );echo'</pre>'.__FILE__.' '.__LINE__;
+//		die(__FILE__ .' '. __LINE__ );
+
+
+
         $fileName = 'sitemap-'.$component.'-1.xml';
         $pathFile = JPATH_SITE .'/'. $fileName ;
+
+        /*echo'<pre>';print_r( $paramsComponent );echo'</pre>'.__FILE__.' '.__LINE__;
+        echo'<pre>';print_r( $mapData );echo'</pre>'.__FILE__.' '.__LINE__;
+        echo'<pre>';print_r( $pathFile );echo'</pre>'.__FILE__.' '.__LINE__;
+
+        die(__FILE__ .' '. __LINE__ );*/
+
+
         try
         {
             // Code that may throw an Exception or Error.

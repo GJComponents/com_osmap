@@ -31,12 +31,15 @@ $app = \Joomla\CMS\Factory::getApplication();
 
 $this->countLines = 0 ;
 
-ob_start();
 
+
+
+ob_start();
 
 echo sprintf('<?xml version="1.0" encoding="%s"?>' . "\n", $this->_charset);
 
 if (empty($this->message)) {
+	// $this->type == standard
     echo $this->loadTemplate( $this->type );
 
 } else {
@@ -44,6 +47,11 @@ if (empty($this->message)) {
 }
 $mapData = ob_get_contents();
 ob_end_clean();
+
+//echo'<pre>';print_r( $this->type );echo'</pre>'.__FILE__.' '.__LINE__;
+//echo'<pre>';print_r( $mapData );echo'</pre>'.__FILE__.' '.__LINE__;
+//die(__FILE__ .' '. __LINE__ );
+
 
 /**
  * Если работает фоновое создание карты
@@ -54,9 +62,6 @@ if ($app->input->get('task', false, 'RAW') == 'background_map' )
     $component = $app->input->get('component', 'com_menu', 'RAW') ;
 
     $mapFileResult = \Alledia\OSMap\Helper\General::createFileMapComponent( $mapData , $component  ) ;
-
-
-
 
     if ( $paramsComponent->params->get('gzip_on') )
     {

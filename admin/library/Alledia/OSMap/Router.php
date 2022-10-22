@@ -33,6 +33,9 @@ defined('_JEXEC') or die();
 class Router
 {
     /**
+     * Направьте данный URL-адрес с помощью приложения сайта. Если в админке, то результат
+     * должен быть таким же, как интерфейс.
+     *
      * Route the given URL using the site application. If in admin, the result
      * needs to be the same as the frontend.
      *
@@ -40,6 +43,7 @@ class Router
      * @param bool   $absolute
      *
      * @return string
+     * @since 3.9
      */
     public function routeURL(string $url, bool $absolute = false): string
     {
@@ -126,11 +130,13 @@ class Router
     }
 
     /**
+     * Возвращает очищенный URL-адрес, удаляя двойные косые черты и косую черту в конце.
      * Returns a sanitized URL, removing double slashes and trailing slash.
      *
      * @param ?string $url
      *
      * @return ?string
+     * @since 3.9
      */
     public function sanitizeURL(?string $url): ?string
     {
