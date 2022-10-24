@@ -732,7 +732,7 @@ abstract class AbstractScript
                         $currentVersion = $currentManifest->get('version');
 
                         if (version_compare($currentVersion, $newVersion, '>')) {
-                            // Store the state of the install/update
+                            // Store the state of the installation/update
                             $this->storeFeedbackForRelatedExtension(
                                 $key,
                                 'message',
@@ -893,7 +893,9 @@ abstract class AbstractScript
     }
 
     /**
+     * Установить запрошенный порядок для выбранного расширения плагина
      * Set requested ordering for selected plugin extension
+     *
      * Accepted ordering arguments:
      * (n<=1 | first) First within folder
      * (* | last) Last within folder
@@ -904,6 +906,7 @@ abstract class AbstractScript
      * @param string    $order
      *
      * @return void
+     * @since 3.9
      */
     final protected function setPluginOrder($extension, $order)
     {
@@ -1276,11 +1279,13 @@ abstract class AbstractScript
     }
 
     /**
+     * Получить extension_id -
      * @param string  $type
      * @param string  $element
      * @param ?string $group
      *
      * @return int
+     * @since 3.9
      */
     final protected function getExtensionId($type, $element, $group = '')
     {
@@ -1299,9 +1304,10 @@ abstract class AbstractScript
     }
 
     /**
-     * Get the path for the manifest file
+     * Получить путь к файлу манифеста | Get the path for the manifest file
      *
      * @return string The path
+     * @since 3.9
      */
     final protected function getManifestPath($type, $element, $group = '')
     {
@@ -1394,10 +1400,14 @@ abstract class AbstractScript
     }
 
     /**
+     * Этот метод добавляет к расширениям метку, позволяющую обнаружить наши расширения.
+     * в таблице расширений.
+     *
      * This method add a mark to the extensions, allowing to detect our extensions
      * on the extensions table.
      *
      * @return void
+     * @since 3.9
      */
     final protected function addAllediaAuthorshipToExtension()
     {

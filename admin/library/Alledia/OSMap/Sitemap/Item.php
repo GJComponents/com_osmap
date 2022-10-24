@@ -271,7 +271,8 @@ class Item extends CMSObject
 
         $this->setLink();
         $this->extractComponentFromLink();
-        $this->setFullLink();
+        // Преобразует текущую ссылку в полный URL-адрес, включая базовый URI.
+		$this->setFullLink();
 
 	    if ( /*$this->id == 1576 ||*/ $this->id == 1607 )
 	    {
@@ -464,14 +465,7 @@ class Item extends CMSObject
     {
         $container = Factory::getPimpleContainer();
 
-
-
-		
-
-
-
-		 
-		// Для домашней страницы 
+		// Для домашней страницы
         if ($this->home) {
  
 	        /**
@@ -559,11 +553,6 @@ class Item extends CMSObject
             $this->fullLink = 'index.php?Itemid=' . $this->params->get('aliasoptions');
         }
 
-	    if ( $this->id == 1576 || $this->id == 1607 )
-	    {
-//		    echo'<pre>';print_r( $this  );echo'</pre>'.__FILE__.' '.__LINE__;
-//		    die(__FILE__ .' '. __LINE__ );
-	    }#END IF
 
 	    /**
 	     * Если это пункт меню, но не псевдоним, принудительно использовать идентификатор
@@ -574,9 +563,6 @@ class Item extends CMSObject
             $this->fullLink = 'index.php?Itemid=' . $this->id;
         }
 
-
-//	    echo'<pre>';print_r( $this->type  );echo'</pre>'.__FILE__.' '.__LINE__ . '<br>';
-//	    echo'<pre>';print_r( $this->fullLink  );echo'</pre>'.__FILE__.' '.__LINE__ . '<br>';
 	    /**
 	     * Если это не элемент меню, используйте в качестве основы для полной ссылки ссылку на элемент
 	     * If is not a menu item, use as base for the fullLink, the item link
@@ -589,6 +575,12 @@ class Item extends CMSObject
         if ($this->isInternal) {
             $this->fullLink = $container->router->routeURL( $this->fullLink, true);
         }
+
+	    if ( strpos( $this->fullLink , 'gde-kupit') )
+	    {
+//		    echo'<pre>';print_r( $this  );echo'</pre>'.__FILE__.' '.__LINE__;
+		   // die(__FILE__ .' '. __LINE__ );
+	    }#END IF
 
 
 		

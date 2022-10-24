@@ -219,7 +219,7 @@ class Collector
 
 
                 $key = 0 ;
-                foreach ( $items as $item    ) {
+                foreach ( $items as $i => $item    ) {
 
 
 
@@ -229,6 +229,9 @@ class Collector
 		                $item = null;
 		                continue;
 	                }
+
+
+
 
 	                /**
 	                 * Сохранить идентификатор текущего пункта меню. Добавлено, чтобы использовать его при определении
@@ -258,10 +261,11 @@ class Collector
 		                $this->changeLevel($level - $this->currentLevel);
 	                }
 
-
-
-
 	                $item['menutype'] = $menu->menutype ;
+
+
+
+
 
 					
 	                /**
@@ -272,12 +276,29 @@ class Collector
 	                 */
 	                $this->submitItemToCallback($item, $callback, true);
 
-	                $mTypeArr = [  'mainmenu',  'account-menu', ];
-	                if (!in_array( $item->menutype , $mTypeArr))
+
+
+
+
+	                $mTypeArr = [  /*'mainmenu',*/  'account-menu', ];
+	                
+					/*if ( !in_array( $item->menutype , $mTypeArr ) )
 	                {
+		                if ( $i > 111 && $i < 125 )
+		                {
+			                echo'<pre>';print_r( $i  );echo'</pre>'.__FILE__.' '.__LINE__;
+			                echo'<pre>';print_r( $item->type );echo'</pre>'.__FILE__.' '.__LINE__;
+			                echo'<pre>';print_r( $item  );echo'</pre>'.__FILE__.' '.__LINE__;
+		                }#END IF
+
+		                if ($i > 125)
+		                {
+							die(__FILE__ .' '. __LINE__ );
+
+		                }#END IF
 //		                echo'<pre>';print_r( $menu );echo'</pre>'.__FILE__.' '.__LINE__;
-//		                echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
-	                }#END IF
+//
+	                }#END IF*/
 
 	                /**
 	                 * Внутренние ссылки могут запускать плагины для захвата большего количества элементов.
@@ -357,11 +378,15 @@ class Collector
         $item = new Item($item, $currentMenuItemId);
 
 
-	    if (!in_array( $item->menutype , $mTypeArr))
+	    /**
+	     * Если ссылка - как внешний URL
+	     * TODO - Добавить в настройки компонента игнорировать внешние ссылки
+	     */
+	    if ( $item->type == 'url')
 	    {
+		    $item = null;
+			return false;
 
-//		    echo'<pre>';print_r( $currentMenuItemId );echo'</pre>'.__FILE__.' '.__LINE__;
-//		    echo'<pre>';print_r( $item );echo'</pre>'.__FILE__.' '.__LINE__;
 	    }#END IF
 
         if ($prepareItem) {
@@ -465,7 +490,6 @@ class Collector
 	     */
 		$db        = $container->db;
         $app       = $container->app;
-
         $lang      = $container->language;
 
         /**
@@ -518,6 +542,8 @@ class Collector
         }
 
         $items = $db->setQuery($query)->loadAssocList();
+
+
 
 
 //	    echo'<pre>';print_r( $ignore_hidden_menus );echo'</pre>'.__FILE__.' '.__LINE__;
