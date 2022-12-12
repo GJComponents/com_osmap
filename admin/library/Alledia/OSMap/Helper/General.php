@@ -514,6 +514,9 @@ abstract class General
 	    {
 		    $component .= '-'.$lang ;
 	    }#END IF
+
+
+
 //		echo'<pre>';print_r( $component );echo'</pre>'.__FILE__.' '.__LINE__;
 //		die(__FILE__ .' '. __LINE__ );
 

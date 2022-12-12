@@ -59,7 +59,7 @@ ob_end_clean();
 if ($app->input->get('task', false, 'RAW') == 'background_map' )
 {
     $paramsComponent = ComponentHelper::getComponent('com_osmap', $strict = false);
-    $component = $app->input->get('component', 'com_menu', 'RAW') ;
+    $component = $app->input->get('component', 'com-menu', 'RAW') ;
 
     $mapFileResult = \Alledia\OSMap\Helper\General::createFileMapComponent( $mapData , $component  ) ;
 
