@@ -1,7 +1,7 @@
 <updates>
     <update>
         <name>Site map creation component by Gartes</name>
-        <description><![CDATA[Компонент создания карты сайта by Gartes]]></description>
+        <description>Site map creation component by Gartes</description>
         <element>com_osmap</element>
         <type>component</type>
 
