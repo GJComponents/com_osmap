@@ -5,7 +5,7 @@
         <element>com_osmap</element>
         <type>component</type>
 
-        <version>6.0.15</version>
+        <version>6.0.16</version>
         <client>administrator</client>
 
         <infourl title="Joomla!">https://www.joomla.org/announcements/release-news/5765-joomla-3-9-6-release.html</infourl>
